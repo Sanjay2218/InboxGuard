@@ -94,7 +94,19 @@ nav {
 
 .hero {
     text-align: center;
-    padding: 65px 0 35px;
+    padding: 55px 0 35px;
+}
+
+/* HERO IMAGE */
+
+.hero-image {
+    width: 190px;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 25px;
+    border-radius: 24px;
+    box-shadow: var(--shadow);
 }
 
 .badge {
@@ -167,12 +179,6 @@ nav {
     margin: 0 0 20px;
 }
 
-.file-name {
-    color: var(--primary);
-    font-weight: 600;
-    margin-top: 12px;
-}
-
 input[type=file] {
     display: none;
 }
@@ -185,6 +191,12 @@ input[type=file] {
     border-radius: 9px;
     cursor: pointer;
     font-weight: 600;
+}
+
+.file-name {
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: 12px;
 }
 
 .analyze-btn {
@@ -347,13 +359,19 @@ footer {
 /* MOBILE */
 
 @media (max-width: 700px) {
+
     .topic-grid,
     .result-grid {
         grid-template-columns: 1fr;
     }
 
     .hero {
-        padding-top: 45px;
+        padding-top: 40px;
+    }
+
+    .hero-image {
+        width: 140px;
+        height: 140px;
     }
 
     .analyzer {
@@ -372,20 +390,40 @@ footer {
 <div class="container">
 
 <nav>
+
     <div class="brand">
-        <div class="logo">✉</div>
+
+        <div class="logo">
+            ✉
+        </div>
+
         InboxGuard
+
     </div>
 
-    <button class="theme-btn" id="themeBtn" title="Switch theme">
+    <button
+        class="theme-btn"
+        id="themeBtn"
+        title="Switch theme"
+    >
         🌙
     </button>
+
 </nav>
 
 
 <section class="hero">
 
-    <div class="badge">EMAIL SECURITY ANALYZER</div>
+    <!-- YOUR IMAGE -->
+    <img
+        src="/static/hero.png"
+        class="hero-image"
+        alt="InboxGuard email security"
+    >
+
+    <div class="badge">
+        EMAIL SECURITY ANALYZER
+    </div>
 
     <h1>
         Protect your inbox with
@@ -408,21 +446,28 @@ footer {
         id="dropZone"
     >
 
-        <div class="mail-icon">✉️🔒</div>
+        <div class="mail-icon">
+            ✉️🔒
+        </div>
 
-        <h2>Analyze an email</h2>
+        <h2>
+            Analyze an email
+        </h2>
 
         <p>
             Upload an <strong>.eml</strong> file to begin
         </p>
 
         <label class="browse">
+
             Choose Email
+
             <input
                 type="file"
                 id="fileInput"
                 accept=".eml"
             >
+
         </label>
 
         <div
@@ -432,6 +477,7 @@ footer {
 
     </div>
 
+
     <button
         class="analyze-btn"
         id="analyzeBtn"
@@ -439,6 +485,7 @@ footer {
     >
         Analyze Email
     </button>
+
 
     <div
         class="status"
@@ -451,64 +498,125 @@ footer {
 <section class="topics">
 
     <div class="section-title">
-        <h2>What InboxGuard checks</h2>
-        <p>Evidence used to understand the risk of an email</p>
+
+        <h2>
+            What InboxGuard checks
+        </h2>
+
+        <p>
+            Evidence used to understand the risk of an email
+        </p>
+
     </div>
+
 
     <div class="topic-grid">
 
         <div class="topic">
-            <div class="topic-icon">🎣</div>
-            <h3>Phishing Detection</h3>
+
+            <div class="topic-icon">
+                🎣
+            </div>
+
+            <h3>
+                Phishing Detection
+            </h3>
+
             <p>
                 Identifies suspicious patterns commonly
                 associated with phishing messages.
             </p>
+
         </div>
 
+
         <div class="topic">
-            <div class="topic-icon">👤</div>
-            <h3>Sender Verification</h3>
+
+            <div class="topic-icon">
+                👤
+            </div>
+
+            <h3>
+                Sender Verification
+            </h3>
+
             <p>
                 Compares sender and Reply-To information
                 for suspicious domain mismatches.
             </p>
+
         </div>
 
+
         <div class="topic">
-            <div class="topic-icon">🔗</div>
-            <h3>URL Analysis</h3>
+
+            <div class="topic-icon">
+                🔗
+            </div>
+
+            <h3>
+                URL Analysis
+            </h3>
+
             <p>
                 Examines links for suspicious structures,
                 IP addresses and other indicators.
             </p>
+
         </div>
 
+
         <div class="topic">
-            <div class="topic-icon">🛡️</div>
-            <h3>SPF / DKIM / DMARC</h3>
+
+            <div class="topic-icon">
+                🛡️
+            </div>
+
+            <h3>
+                SPF / DKIM / DMARC
+            </h3>
+
             <p>
                 Inspects available authentication results
                 included in the email headers.
             </p>
+
         </div>
 
+
         <div class="topic">
-            <div class="topic-icon">📎</div>
-            <h3>Attachment Analysis</h3>
+
+            <div class="topic-icon">
+                📎
+            </div>
+
+            <h3>
+                Attachment Analysis
+            </h3>
+
             <p>
                 Flags potentially dangerous executable
                 and script-based attachments.
             </p>
+
         </div>
 
+
         <div class="topic">
-            <div class="topic-icon">🌐</div>
-            <h3>Threat Intelligence</h3>
+
+            <div class="topic-icon">
+                🌐
+            </div>
+
+            <h3>
+                Threat Intelligence
+            </h3>
+
             <p>
                 Can compare detected URLs against supported
                 threat-intelligence sources.
             </p>
+
         </div>
 
     </div>
@@ -537,26 +645,51 @@ footer {
 
         <div class="result-card">
 
-            <h3>Email Information</h3>
+            <h3>
+                Email Information
+            </h3>
 
             <div class="info-row">
-                <span class="label">Subject</span>
+
+                <span class="label">
+                    Subject
+                </span>
+
                 <span id="subject"></span>
+
             </div>
 
+
             <div class="info-row">
-                <span class="label">From</span>
+
+                <span class="label">
+                    From
+                </span>
+
                 <span id="from"></span>
+
             </div>
 
+
             <div class="info-row">
-                <span class="label">Reply-To</span>
+
+                <span class="label">
+                    Reply-To
+                </span>
+
                 <span id="replyTo"></span>
+
             </div>
 
+
             <div class="info-row">
-                <span class="label">URLs Found</span>
+
+                <span class="label">
+                    URLs Found
+                </span>
+
                 <span id="urlCount"></span>
+
             </div>
 
         </div>
@@ -564,7 +697,9 @@ footer {
 
         <div class="result-card">
 
-            <h3>Detected Indicators</h3>
+            <h3>
+                Detected Indicators
+            </h3>
 
             <ul id="reasons"></ul>
 
@@ -573,7 +708,9 @@ footer {
 
         <div class="result-card">
 
-            <h3>URLs</h3>
+            <h3>
+                URLs
+            </h3>
 
             <ul id="urls"></ul>
 
@@ -582,7 +719,9 @@ footer {
 
         <div class="result-card">
 
-            <h3>Attachments</h3>
+            <h3>
+                Attachments
+            </h3>
 
             <ul id="attachments"></ul>
 
@@ -591,7 +730,9 @@ footer {
 
         <div class="result-card">
 
-            <h3>Threat Intelligence</h3>
+            <h3>
+                Threat Intelligence
+            </h3>
 
             <div id="threatIntel"></div>
 
@@ -600,13 +741,17 @@ footer {
 
         <div class="result-card">
 
-            <h3>Important</h3>
+            <h3>
+                Important
+            </h3>
 
             <p class="warning">
+
                 The risk score is an evidence-weighted
                 security score, not a calibrated probability.
                 A LOW RISK result does not guarantee that
                 an email is safe.
+
             </p>
 
         </div>
@@ -619,239 +764,336 @@ footer {
 
 
 <footer>
-    InboxGuard · Evidence-based email security analysis
+
+    InboxGuard · Evidence-based email security
+
 </footer>
 
 
 <script>
 
-const fileInput = document.getElementById("fileInput");
-const fileName = document.getElementById("fileName");
-const analyzeBtn = document.getElementById("analyzeBtn");
-const status = document.getElementById("status");
-const dropZone = document.getElementById("dropZone");
-const results = document.getElementById("results");
-const themeBtn = document.getElementById("themeBtn");
+const fileInput =
+    document.getElementById("fileInput");
+
+const fileName =
+    document.getElementById("fileName");
+
+const analyzeBtn =
+    document.getElementById("analyzeBtn");
+
+const status =
+    document.getElementById("status");
+
+const dropZone =
+    document.getElementById("dropZone");
+
+const results =
+    document.getElementById("results");
+
+const themeBtn =
+    document.getElementById("themeBtn");
 
 
 /* THEME */
 
-const savedTheme = localStorage.getItem("inboxguard-theme");
+const savedTheme =
+    localStorage.getItem(
+        "inboxguard-theme"
+    );
 
 if (savedTheme === "dark") {
+
     document.body.classList.add("dark");
+
     themeBtn.textContent = "☀️";
 }
 
-themeBtn.addEventListener("click", () => {
 
-    document.body.classList.toggle("dark");
+themeBtn.addEventListener(
+    "click",
+    () => {
 
-    const dark =
-        document.body.classList.contains("dark");
+        document.body.classList.toggle(
+            "dark"
+        );
 
-    localStorage.setItem(
-        "inboxguard-theme",
-        dark ? "dark" : "light"
-    );
+        const dark =
+            document.body.classList.contains(
+                "dark"
+            );
 
-    themeBtn.textContent =
-        dark ? "☀️" : "🌙";
+        localStorage.setItem(
+            "inboxguard-theme",
+            dark ? "dark" : "light"
+        );
 
-});
+        themeBtn.textContent =
+            dark ? "☀️" : "🌙";
+
+    }
+);
 
 
 /* FILE SELECTION */
 
-fileInput.addEventListener("change", () => {
+fileInput.addEventListener(
+    "change",
+    () => {
 
-    const file = fileInput.files[0];
+        const file =
+            fileInput.files[0];
 
-    if (!file) {
-        fileName.textContent = "";
-        analyzeBtn.disabled = true;
-        return;
-    }
+        if (!file) {
 
-    if (!file.name.toLowerCase().endsWith(".eml")) {
+            fileName.textContent = "";
 
-        fileName.textContent =
-            "Please choose an .eml file.";
+            analyzeBtn.disabled = true;
 
-        analyzeBtn.disabled = true;
-        return;
-    }
-
-    fileName.textContent =
-        "Selected: " + file.name;
-
-    analyzeBtn.disabled = false;
-
-});
-
-
-/* DRAG AND DROP */
-
-dropZone.addEventListener("dragover", (e) => {
-
-    e.preventDefault();
-    dropZone.classList.add("dragover");
-
-});
-
-dropZone.addEventListener("dragleave", () => {
-
-    dropZone.classList.remove("dragover");
-
-});
-
-dropZone.addEventListener("drop", (e) => {
-
-    e.preventDefault();
-
-    dropZone.classList.remove("dragover");
-
-    const file = e.dataTransfer.files[0];
-
-    if (!file) return;
-
-    if (!file.name.toLowerCase().endsWith(".eml")) {
-
-        fileName.textContent =
-            "Please choose an .eml file.";
-
-        return;
-    }
-
-    fileInput.files = e.dataTransfer.files;
-
-    fileName.textContent =
-        "Selected: " + file.name;
-
-    analyzeBtn.disabled = false;
-
-});
-
-
-/* ANALYZE */
-
-analyzeBtn.addEventListener("click", async () => {
-
-    const file = fileInput.files[0];
-
-    if (!file) return;
-
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-
-
-    analyzeBtn.disabled = true;
-
-    status.textContent =
-        "Analyzing email...";
-
-    results.style.display = "none";
-
-
-    try {
-
-        const response = await fetch(
-            "/api/analyze",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
-
-
-        const text = await response.text();
-
-        let data;
-
-        try {
-
-            data = JSON.parse(text);
-
-        } catch {
-
-            throw new Error(
-                "Server returned an invalid response."
-            );
-
+            return;
         }
 
 
-        if (!response.ok || data.success === false) {
+        if (
+            !file.name
+                .toLowerCase()
+                .endsWith(".eml")
+        ) {
 
-            throw new Error(
-                data.detail ||
-                data.error ||
-                "Analysis failed."
-            );
+            fileName.textContent =
+                "Please choose an .eml file.";
 
+            analyzeBtn.disabled = true;
+
+            return;
         }
 
 
-        displayResults(data);
-
-        status.textContent =
-            "Analysis completed successfully.";
-
-    }
-
-    catch (error) {
-
-        status.textContent =
-            "Error: " + error.message;
-
-    }
-
-    finally {
+        fileName.textContent =
+            "Selected: " + file.name;
 
         analyzeBtn.disabled = false;
 
     }
+);
 
-});
+
+/* DRAG AND DROP */
+
+dropZone.addEventListener(
+    "dragover",
+    (e) => {
+
+        e.preventDefault();
+
+        dropZone.classList.add(
+            "dragover"
+        );
+
+    }
+);
 
 
-/* DISPLAY RESULTS */
+dropZone.addEventListener(
+    "dragleave",
+    () => {
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+    }
+);
+
+
+dropZone.addEventListener(
+    "drop",
+    (e) => {
+
+        e.preventDefault();
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+        const file =
+            e.dataTransfer.files[0];
+
+        if (!file) return;
+
+
+        if (
+            !file.name
+                .toLowerCase()
+                .endsWith(".eml")
+        ) {
+
+            fileName.textContent =
+                "Please choose an .eml file.";
+
+            return;
+        }
+
+
+        fileInput.files =
+            e.dataTransfer.files;
+
+        fileName.textContent =
+            "Selected: " + file.name;
+
+        analyzeBtn.disabled = false;
+
+    }
+);
+
+
+/* ANALYZE */
+
+analyzeBtn.addEventListener(
+    "click",
+    async () => {
+
+        const file =
+            fileInput.files[0];
+
+        if (!file) return;
+
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        analyzeBtn.disabled = true;
+
+        status.textContent =
+            "Analyzing email...";
+
+        results.style.display =
+            "none";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/analyze",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            const text =
+                await response.text();
+
+
+            let data;
+
+            try {
+
+                data =
+                    JSON.parse(text);
+
+            } catch {
+
+                throw new Error(
+                    "Server returned an invalid response."
+                );
+
+            }
+
+
+            if (
+                !response.ok ||
+                data.success === false
+            ) {
+
+                throw new Error(
+                    data.detail ||
+                    data.error ||
+                    "Analysis failed."
+                );
+
+            }
+
+
+            displayResults(data);
+
+            status.textContent =
+                "Analysis completed successfully.";
+
+        }
+
+        catch (error) {
+
+            status.textContent =
+                "Error: " +
+                error.message;
+
+        }
+
+        finally {
+
+            analyzeBtn.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* RESULTS */
 
 function displayResults(data) {
 
-    results.style.display = "block";
+    results.style.display =
+        "block";
 
 
-    document.getElementById("verdict")
-        .textContent = data.verdict;
+    document.getElementById(
+        "verdict"
+    ).textContent =
+        data.verdict;
 
 
-    document.getElementById("score")
-        .textContent =
+    document.getElementById(
+        "score"
+    ).textContent =
         "Evidence score: " +
         data.risk_score +
         "/100";
 
 
-    document.getElementById("subject")
-        .textContent =
-        data.email.subject || "Not available";
+    document.getElementById(
+        "subject"
+    ).textContent =
+        data.email.subject ||
+        "Not available";
 
 
-    document.getElementById("from")
-        .textContent =
-        data.email.from || "Not available";
+    document.getElementById(
+        "from"
+    ).textContent =
+        data.email.from ||
+        "Not available";
 
 
-    document.getElementById("replyTo")
-        .textContent =
-        data.email.reply_to || "Not available";
+    document.getElementById(
+        "replyTo"
+    ).textContent =
+        data.email.reply_to ||
+        "Not available";
 
 
-    document.getElementById("urlCount")
-        .textContent =
+    document.getElementById(
+        "urlCount"
+    ).textContent =
         data.email.urls_found;
 
 
@@ -863,9 +1105,12 @@ function displayResults(data) {
 
 
     const urlList =
-        document.getElementById("urls");
+        document.getElementById(
+            "urls"
+        );
 
     urlList.innerHTML = "";
+
 
     if (data.urls.length === 0) {
 
@@ -876,16 +1121,18 @@ function displayResults(data) {
 
     } else {
 
-        data.urls.forEach(item => {
+        data.urls.forEach(
+            item => {
 
-            addListItem(
-                urlList,
-                item.url +
-                " — evidence score: " +
-                item.score
-            );
+                addListItem(
+                    urlList,
+                    item.url +
+                    " — evidence score: " +
+                    item.score
+                );
 
-        });
+            }
+        );
 
     }
 
@@ -898,42 +1145,54 @@ function displayResults(data) {
 
 
     const ti =
-        document.getElementById("threatIntel");
+        document.getElementById(
+            "threatIntel"
+        );
 
     ti.innerHTML = "";
 
-    if (data.threat_intelligence.length === 0) {
+
+    if (
+        data.threat_intelligence.length === 0
+    ) {
 
         ti.textContent =
             "No URLs available for threat-intelligence lookup.";
 
     } else {
 
-        data.threat_intelligence.forEach(item => {
+        data.threat_intelligence.forEach(
+            item => {
 
-            const div =
-                document.createElement("div");
+                const div =
+                    document.createElement(
+                        "div"
+                    );
 
-            div.className = "info-row";
+                div.className =
+                    "info-row";
 
-            div.textContent =
-                item.url +
-                " | " +
-                (
-                    item.phishtank.match
-                    ? "PhishTank: MATCH"
-                    : "PhishTank: No match"
-                ) +
-                " | " +
-                (
-                    item.urlhaus.match
-                    ? "URLhaus: MATCH"
-                    : "URLhaus: No match"
-                );
 
-            ti.appendChild(div);
+                div.textContent =
+                    item.url +
+                    " | " +
+                    (
+                        item.phishtank.match
+                        ? "PhishTank: MATCH"
+                        : "PhishTank: No match"
+                    ) +
+                    " | " +
+                    (
+                        item.urlhaus.match
+                        ? "URLhaus: MATCH"
+                        : "URLhaus: No match"
+                    );
 
-        });
+
+                ti.appendChild(div);
+
+            }
+        );
 
     }
 
@@ -945,35 +1204,58 @@ function displayResults(data) {
 }
 
 
-function fillList(id, items, emptyText) {
+function fillList(
+    id,
+    items,
+    emptyText
+) {
 
     const list =
         document.getElementById(id);
 
     list.innerHTML = "";
 
-    if (!items || items.length === 0) {
 
-        addListItem(list, emptyText);
+    if (
+        !items ||
+        items.length === 0
+    ) {
+
+        addListItem(
+            list,
+            emptyText
+        );
 
         return;
     }
 
-    items.forEach(item => {
 
-        addListItem(list, item);
+    items.forEach(
+        item => {
 
-    });
+            addListItem(
+                list,
+                item
+            );
+
+        }
+    );
 
 }
 
 
-function addListItem(list, text) {
+function addListItem(
+    list,
+    text
+) {
 
     const li =
-        document.createElement("li");
+        document.createElement(
+            "li"
+        );
 
-    li.textContent = text;
+    li.textContent =
+        text;
 
     list.appendChild(li);
 
