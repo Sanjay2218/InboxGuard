@@ -1,1022 +1,577 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>InboxGuard — Email Security</title>
-
-<style>
-:root {
-    --bg: #f6f8fc;
-    --card: #ffffff;
-    --text: #172033;
-    --muted: #6d7688;
-    --border: #e3e7ef;
-    --primary: #315efb;
-    --primary-soft: #eef2ff;
-    --danger: #dc3545;
-    --warning: #d88900;
-    --success: #16845b;
-    --shadow: 0 10px 35px rgba(30, 45, 80, 0.08);
-}
-
-body.dark {
-    --bg: #0d1117;
-    --card: #151b24;
-    --text: #f1f4f9;
-    --muted: #9ca7b8;
-    --border: #27303d;
-    --primary: #6d8cff;
-    --primary-soft: #1a2442;
-    --shadow: 0 10px 35px rgba(0,0,0,.25);
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: Inter, Arial, sans-serif;
-    transition: background .25s, color .25s;
-}
-
-.container {
-    width: min(1080px, 92%);
-    margin: auto;
-}
-
-/* NAVBAR */
-
-nav {
-    height: 76px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    font-size: 21px;
-    font-weight: 700;
-}
-
-.logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 20px;
-}
-
-.theme-btn {
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-/* HERO */
-
-.hero {
-    text-align: center;
-    padding: 55px 0 35px;
-}
-
-/* HERO IMAGE */
-
-.hero-image {
-    width: 190px;
-    height: 190px;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto 25px;
-    border-radius: 24px;
-    box-shadow: var(--shadow);
-}
-
-.badge {
-    display: inline-block;
-    background: var(--primary-soft);
-    color: var(--primary);
-    padding: 7px 13px;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 18px;
-}
-
-.hero h1 {
-    font-size: clamp(38px, 6vw, 62px);
-    margin: 0;
-    letter-spacing: -2px;
-}
-
-.hero h1 span {
-    color: var(--primary);
-}
-
-.hero p {
-    max-width: 650px;
-    margin: 18px auto 0;
-    color: var(--muted);
-    font-size: 17px;
-    line-height: 1.7;
-}
-
-/* ANALYZER */
-
-.analyzer {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    padding: 30px;
-    margin: 25px auto 55px;
-    max-width: 850px;
-}
-
-.drop-zone {
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 45px 25px;
-    text-align: center;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.drop-zone:hover,
-.drop-zone.dragover {
-    border-color: var(--primary);
-    background: var(--primary-soft);
-}
-
-.mail-icon {
-    font-size: 45px;
-    margin-bottom: 12px;
-}
-
-.drop-zone h2 {
-    margin: 5px 0 8px;
-}
-
-.drop-zone p {
-    color: var(--muted);
-    margin: 0 0 20px;
-}
-
-input[type=file] {
-    display: none;
-}
-
-.browse {
-    display: inline-block;
-    background: var(--primary);
-    color: white;
-    padding: 12px 21px;
-    border-radius: 9px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.file-name {
-    color: var(--primary);
-    font-weight: 600;
-    margin-top: 12px;
-}
-
-.analyze-btn {
-    width: 100%;
-    margin-top: 18px;
-    border: none;
-    background: var(--text);
-    color: var(--bg);
-    padding: 14px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.analyze-btn:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-}
-
-.status {
-    text-align: center;
-    margin-top: 15px;
-    color: var(--muted);
-    min-height: 20px;
-}
-
-/* TOPICS */
-
-.topics {
-    padding-bottom: 60px;
-}
-
-.section-title {
-    text-align: center;
-    margin-bottom: 28px;
-}
-
-.section-title h2 {
-    margin-bottom: 8px;
-}
-
-.section-title p {
-    color: var(--muted);
-}
-
-.topic-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.topic {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 22px;
-}
-
-.topic-icon {
-    font-size: 25px;
-}
-
-.topic h3 {
-    margin: 12px 0 7px;
-    font-size: 16px;
-}
-
-.topic p {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-/* RESULTS */
-
-#results {
-    display: none;
-    margin-bottom: 60px;
-}
-
-.result-header {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 30px;
-    box-shadow: var(--shadow);
-    text-align: center;
-}
-
-.verdict {
-    font-size: 30px;
-    font-weight: 800;
-}
-
-.score {
-    margin-top: 8px;
-    color: var(--muted);
-}
-
-.result-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 16px;
-}
-
-.result-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 22px;
-}
-
-.result-card h3 {
-    margin-top: 0;
-}
-
-.info-row {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    word-break: break-word;
-}
-
-.info-row:last-child {
-    border-bottom: none;
-}
-
-.label {
-    color: var(--muted);
-    font-size: 13px;
-    display: block;
-    margin-bottom: 4px;
-}
-
-ul {
-    padding-left: 20px;
-}
-
-li {
-    margin: 9px 0;
-    line-height: 1.45;
-}
-
-.warning {
-    color: var(--warning);
-    line-height: 1.6;
-}
-
-/* FOOTER */
-
-footer {
-    border-top: 1px solid var(--border);
-    text-align: center;
-    padding: 28px;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-/* MOBILE */
-
-@media (max-width: 700px) {
-
-    .topic-grid,
-    .result-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hero {
-        padding-top: 40px;
-    }
-
-    .hero-image {
-        width: 140px;
-        height: 140px;
-    }
-
-    .analyzer {
-        padding: 18px;
-    }
-
-    .drop-zone {
-        padding: 35px 15px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>InboxGuard — Email Security Analyzer</title>
+
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #172033;
+            --muted: #667085;
+            --primary: #2563eb;
+            --border: #e5e7eb;
+            --shadow: 0 12px 35px rgba(0,0,0,0.08);
+            --danger: #dc2626;
+            --warning: #d97706;
+            --safe: #16a34a;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --primary: #60a5fa;
+            --border: #334155;
+            --shadow: 0 12px 35px rgba(0,0,0,0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: 0.25s;
+        }
+
+        header {
+            width: 100%;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        .nav {
+            max-width: 1100px;
+            margin: auto;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .brand-icon {
+            font-size: 28px;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .theme-btn {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 9px 13px;
+            border-radius: 10px;
+        }
+
+        .hero {
+            max-width: 1100px;
+            margin: auto;
+            padding: 60px 22px 35px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            margin-top: 18px;
+            font-size: clamp(34px, 6vw, 58px);
+            line-height: 1.05;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: 20px auto;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .hero-image {
+            width: 170px;
+            height: 170px;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 25px;
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px 22px 60px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .upload-box {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary);
+        }
+
+        .upload-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .upload-box h2 {
+            margin-bottom: 8px;
+        }
+
+        .upload-box p {
+            color: var(--muted);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 15px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 16px;
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--muted);
+        }
+
+        .topics {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .topic {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: var(--card);
+        }
+
+        .topic strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .topic span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        #results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .verdict {
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .verdict h2 {
+            margin-bottom: 8px;
+        }
+
+        .score {
+            font-size: 42px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .section {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        .section h3 {
+            margin-bottom: 12px;
+        }
+
+        .section p {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 7px 0;
+            color: var(--muted);
+        }
+
+        .high {
+            color: var(--danger);
+        }
+
+        .suspicious {
+            color: var(--warning);
+        }
+
+        .low {
+            color: var(--safe);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .topics {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 40px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<nav>
-
-    <div class="brand">
-
-        <div class="logo">
-            ✉
+<header>
+    <div class="nav">
+        <div class="brand">
+            <span class="brand-icon">📧🔒</span>
+            <span>InboxGuard</span>
         </div>
 
-        InboxGuard
-
+        <button class="theme-btn" onclick="toggleTheme()">
+            🌙 Theme
+        </button>
     </div>
-
-    <button
-        class="theme-btn"
-        id="themeBtn"
-        title="Switch theme"
-    >
-        🌙
-    </button>
-
-</nav>
-
+</header>
 
 <section class="hero">
 
-    <!-- YOUR IMAGE -->
     <img
         src="/static/hero.png"
         class="hero-image"
         alt="InboxGuard email security"
     >
 
-    <div class="badge">
-        EMAIL SECURITY ANALYZER
-    </div>
+    <span class="badge">EMAIL SECURITY ANALYZER</span>
 
-    <h1>
-        Protect your inbox with
-        <span>InboxGuard</span>
-    </h1>
+    <h1>Protect your inbox with InboxGuard</h1>
 
     <p>
-        Analyze suspicious emails using real email headers,
-        URL indicators, attachment analysis and available
-        threat-intelligence data.
+        Upload an email and analyze its headers, links, attachments,
+        authentication signals and available threat intelligence.
     </p>
 
 </section>
 
+<main class="container">
 
-<section class="analyzer">
+    <div class="card">
 
-    <div
-        class="drop-zone"
-        id="dropZone"
-    >
+        <label class="upload-box" for="emailFile">
 
-        <div class="mail-icon">
-            ✉️🔒
-        </div>
+            <div class="upload-icon">📨</div>
 
-        <h2>
-            Analyze an email
-        </h2>
+            <h2>Upload an email</h2>
 
-        <p>
-            Upload an <strong>.eml</strong> file to begin
-        </p>
-
-        <label class="browse">
-
-            Choose Email
+            <p>
+                Select a .eml file to begin security analysis
+            </p>
 
             <input
+                id="emailFile"
                 type="file"
-                id="fileInput"
-                accept=".eml"
+                accept=".eml,message/rfc822"
+                onchange="fileSelected()"
             >
+
+            <div id="fileName" class="file-name">
+                No file selected
+            </div>
 
         </label>
 
-        <div
-            class="file-name"
-            id="fileName"
-        ></div>
+        <button
+            id="analyzeBtn"
+            class="analyze-btn"
+            onclick="analyzeEmail()"
+            disabled
+        >
+            Analyze Email
+        </button>
+
+        <div id="status" class="status"></div>
 
     </div>
 
 
-    <button
-        class="analyze-btn"
-        id="analyzeBtn"
-        disabled
-    >
-        Analyze Email
-    </button>
+    <div class="topics">
 
+        <div class="topic">
+            <strong>🎣 Phishing Detection</strong>
+            <span>Detect suspicious phishing indicators.</span>
+        </div>
 
-    <div
-        class="status"
-        id="status"
-    ></div>
+        <div class="topic">
+            <strong>👤 Sender Verification</strong>
+            <span>Check sender and Reply-To mismatches.</span>
+        </div>
 
-</section>
+        <div class="topic">
+            <strong>🔗 URL Analysis</strong>
+            <span>Inspect suspicious links and domains.</span>
+        </div>
 
+        <div class="topic">
+            <strong>🛡️ SPF / DKIM / DMARC</strong>
+            <span>Inspect available authentication results.</span>
+        </div>
 
-<section class="topics">
+        <div class="topic">
+            <strong>📎 Attachment Analysis</strong>
+            <span>Identify potentially dangerous file types.</span>
+        </div>
 
-    <div class="section-title">
-
-        <h2>
-            What InboxGuard checks
-        </h2>
-
-        <p>
-            Evidence used to understand the risk of an email
-        </p>
+        <div class="topic">
+            <strong>🌐 Threat Intelligence</strong>
+            <span>Use available external threat intelligence.</span>
+        </div>
 
     </div>
 
 
-    <div class="topic-grid">
+    <div id="results">
 
-        <div class="topic">
+        <div class="card">
 
-            <div class="topic-icon">
-                🎣
+            <div class="verdict">
+                <h2 id="verdict">Analysis Result</h2>
+                <div id="score" class="score">0/100</div>
             </div>
 
-            <h3>
-                Phishing Detection
-            </h3>
 
-            <p>
-                Identifies suspicious patterns commonly
-                associated with phishing messages.
-            </p>
+            <div class="section">
 
-        </div>
+                <h3>📧 Email Information</h3>
 
+                <p id="emailInfo"></p>
 
-        <div class="topic">
-
-            <div class="topic-icon">
-                👤
             </div>
 
-            <h3>
-                Sender Verification
-            </h3>
 
-            <p>
-                Compares sender and Reply-To information
-                for suspicious domain mismatches.
-            </p>
+            <div class="section">
 
-        </div>
+                <h3>🚨 Detected Indicators</h3>
 
+                <ul id="reasons"></ul>
 
-        <div class="topic">
-
-            <div class="topic-icon">
-                🔗
             </div>
 
-            <h3>
-                URL Analysis
-            </h3>
 
-            <p>
-                Examines links for suspicious structures,
-                IP addresses and other indicators.
-            </p>
+            <div class="section">
 
-        </div>
+                <h3>🔗 URLs</h3>
 
+                <ul id="urls"></ul>
 
-        <div class="topic">
-
-            <div class="topic-icon">
-                🛡️
             </div>
 
-            <h3>
-                SPF / DKIM / DMARC
-            </h3>
 
-            <p>
-                Inspects available authentication results
-                included in the email headers.
-            </p>
+            <div class="section">
 
-        </div>
+                <h3>📎 Attachments</h3>
 
+                <ul id="attachments"></ul>
 
-        <div class="topic">
-
-            <div class="topic-icon">
-                📎
             </div>
 
-            <h3>
-                Attachment Analysis
-            </h3>
 
-            <p>
-                Flags potentially dangerous executable
-                and script-based attachments.
-            </p>
+            <div class="section">
 
-        </div>
+                <h3>🌐 Threat Intelligence</h3>
 
+                <ul id="threatIntel"></ul>
 
-        <div class="topic">
-
-            <div class="topic-icon">
-                🌐
             </div>
 
-            <h3>
-                Threat Intelligence
-            </h3>
 
-            <p>
-                Can compare detected URLs against supported
-                threat-intelligence sources.
-            </p>
+            <div class="section">
+
+                <h3>ℹ️ Limitation</h3>
+
+                <p id="limitation"></p>
+            </div>
 
         </div>
 
     </div>
 
-</section>
-
-
-<section id="results">
-
-    <div class="result-header">
-
-        <div
-            class="verdict"
-            id="verdict"
-        ></div>
-
-        <div
-            class="score"
-            id="score"
-        ></div>
-
-    </div>
-
-
-    <div class="result-grid">
-
-        <div class="result-card">
-
-            <h3>
-                Email Information
-            </h3>
-
-            <div class="info-row">
-
-                <span class="label">
-                    Subject
-                </span>
-
-                <span id="subject"></span>
-
-            </div>
-
-
-            <div class="info-row">
-
-                <span class="label">
-                    From
-                </span>
-
-                <span id="from"></span>
-
-            </div>
-
-
-            <div class="info-row">
-
-                <span class="label">
-                    Reply-To
-                </span>
-
-                <span id="replyTo"></span>
-
-            </div>
-
-
-            <div class="info-row">
-
-                <span class="label">
-                    URLs Found
-                </span>
-
-                <span id="urlCount"></span>
-
-            </div>
-
-        </div>
-
-
-        <div class="result-card">
-
-            <h3>
-                Detected Indicators
-            </h3>
-
-            <ul id="reasons"></ul>
-
-        </div>
-
-
-        <div class="result-card">
-
-            <h3>
-                URLs
-            </h3>
-
-            <ul id="urls"></ul>
-
-        </div>
-
-
-        <div class="result-card">
-
-            <h3>
-                Attachments
-            </h3>
-
-            <ul id="attachments"></ul>
-
-        </div>
-
-
-        <div class="result-card">
-
-            <h3>
-                Threat Intelligence
-            </h3>
-
-            <div id="threatIntel"></div>
-
-        </div>
-
-
-        <div class="result-card">
-
-            <h3>
-                Important
-            </h3>
-
-            <p class="warning">
-
-                The risk score is an evidence-weighted
-                security score, not a calibrated probability.
-                A LOW RISK result does not guarantee that
-                an email is safe.
-
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-</div>
-
+</main>
 
 <footer>
-
-    InboxGuard · Evidence-based email security
-
+    InboxGuard — Evidence-based email security analysis
 </footer>
 
 
 <script>
 
-const fileInput =
-    document.getElementById("fileInput");
-
-const fileName =
-    document.getElementById("fileName");
-
-const analyzeBtn =
-    document.getElementById("analyzeBtn");
-
-const status =
-    document.getElementById("status");
-
-const dropZone =
-    document.getElementById("dropZone");
-
-const results =
-    document.getElementById("results");
-
-const themeBtn =
-    document.getElementById("themeBtn");
+    let selectedFile = null;
 
 
-/* THEME */
+    function toggleTheme() {
 
-const savedTheme =
-    localStorage.getItem(
-        "inboxguard-theme"
-    );
-
-if (savedTheme === "dark") {
-
-    document.body.classList.add("dark");
-
-    themeBtn.textContent = "☀️";
-}
-
-
-themeBtn.addEventListener(
-    "click",
-    () => {
-
-        document.body.classList.toggle(
-            "dark"
-        );
-
-        const dark =
-            document.body.classList.contains(
-                "dark"
-            );
+        document.body.classList.toggle("dark");
 
         localStorage.setItem(
-            "inboxguard-theme",
-            dark ? "dark" : "light"
+            "theme",
+            document.body.classList.contains("dark")
+                ? "dark"
+                : "light"
         );
-
-        themeBtn.textContent =
-            dark ? "☀️" : "🌙";
-
     }
-);
 
 
-/* FILE SELECTION */
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+    }
 
-fileInput.addEventListener(
-    "change",
-    () => {
 
-        const file =
-            fileInput.files[0];
+    function fileSelected() {
 
-        if (!file) {
+        const input = document.getElementById("emailFile");
 
-            fileName.textContent = "";
+        selectedFile = input.files[0];
 
+        const fileName = document.getElementById("fileName");
+        const analyzeBtn = document.getElementById("analyzeBtn");
+
+        if (selectedFile) {
+
+            fileName.textContent = selectedFile.name;
+
+            analyzeBtn.disabled =
+                !selectedFile.name.toLowerCase().endsWith(".eml");
+
+        } else {
+
+            fileName.textContent = "No file selected";
             analyzeBtn.disabled = true;
 
+        }
+    }
+
+
+    async function analyzeEmail() {
+
+        if (!selectedFile) {
             return;
         }
 
+        const status = document.getElementById("status");
+        const button = document.getElementById("analyzeBtn");
 
-        if (
-            !file.name
-                .toLowerCase()
-                .endsWith(".eml")
-        ) {
+        status.textContent = "Analyzing email...";
+        button.disabled = true;
 
-            fileName.textContent =
-                "Please choose an .eml file.";
+        const formData = new FormData();
 
-            analyzeBtn.disabled = true;
-
-            return;
-        }
-
-
-        fileName.textContent =
-            "Selected: " + file.name;
-
-        analyzeBtn.disabled = false;
-
-    }
-);
-
-
-/* DRAG AND DROP */
-
-dropZone.addEventListener(
-    "dragover",
-    (e) => {
-
-        e.preventDefault();
-
-        dropZone.classList.add(
-            "dragover"
-        );
-
-    }
-);
-
-
-dropZone.addEventListener(
-    "dragleave",
-    () => {
-
-        dropZone.classList.remove(
-            "dragover"
-        );
-
-    }
-);
-
-
-dropZone.addEventListener(
-    "drop",
-    (e) => {
-
-        e.preventDefault();
-
-        dropZone.classList.remove(
-            "dragover"
-        );
-
-        const file =
-            e.dataTransfer.files[0];
-
-        if (!file) return;
-
-
-        if (
-            !file.name
-                .toLowerCase()
-                .endsWith(".eml")
-        ) {
-
-            fileName.textContent =
-                "Please choose an .eml file.";
-
-            return;
-        }
-
-
-        fileInput.files =
-            e.dataTransfer.files;
-
-        fileName.textContent =
-            "Selected: " + file.name;
-
-        analyzeBtn.disabled = false;
-
-    }
-);
-
-
-/* ANALYZE */
-
-analyzeBtn.addEventListener(
-    "click",
-    async () => {
-
-        const file =
-            fileInput.files[0];
-
-        if (!file) return;
-
-
-        const formData =
-            new FormData();
-
-        formData.append(
-            "file",
-            file
-        );
-
-
-        analyzeBtn.disabled = true;
-
-        status.textContent =
-            "Analyzing email...";
-
-        results.style.display =
-            "none";
+        formData.append("file", selectedFile);
 
 
         try {
 
-            const response =
-                await fetch(
-                    "/api/analyze",
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
+            const response = await fetch(
+                "/api/analyze",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
 
 
-            const text =
-                await response.text();
+            const data = await response.json();
 
 
-            let data;
-
-            try {
-
-                data =
-                    JSON.parse(text);
-
-            } catch {
+            if (!response.ok) {
 
                 throw new Error(
-                    "Server returned an invalid response."
-                );
-
-            }
-
-
-            if (
-                !response.ok ||
-                data.success === false
-            ) {
-
-                throw new Error(
-                    data.detail ||
-                    data.error ||
-                    "Analysis failed."
+                    data.detail || "Analysis failed"
                 );
 
             }
@@ -1027,241 +582,187 @@ analyzeBtn.addEventListener(
             status.textContent =
                 "Analysis completed successfully.";
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
             status.textContent =
-                "Error: " +
-                error.message;
+                "Error: " + error.message;
+
+        } finally {
+
+            button.disabled = false;
 
         }
-
-        finally {
-
-            analyzeBtn.disabled =
-                false;
-
-        }
-
     }
-);
 
 
-/* RESULTS */
+    function displayResults(data) {
 
-function displayResults(data) {
+        const results =
+            document.getElementById("results");
 
-    results.style.display =
-        "block";
-
-
-    document.getElementById(
-        "verdict"
-    ).textContent =
-        data.verdict;
+        results.style.display = "block";
 
 
-    document.getElementById(
-        "score"
-    ).textContent =
-        "Evidence score: " +
-        data.risk_score +
-        "/100";
+        document.getElementById("score").textContent =
+            `${data.score}/100`;
 
 
-    document.getElementById(
-        "subject"
-    ).textContent =
-        data.email.subject ||
-        "Not available";
+        const verdict =
+            document.getElementById("verdict");
+
+        verdict.textContent =
+            data.verdict || "Analysis Result";
 
 
-    document.getElementById(
-        "from"
-    ).textContent =
-        data.email.from ||
-        "Not available";
+        verdict.className = "";
+
+        if (data.score >= 70) {
+
+            verdict.classList.add("high");
+
+        } else if (data.score >= 40) {
+
+            verdict.classList.add("suspicious");
+
+        } else {
+
+            verdict.classList.add("low");
+
+        }
 
 
-    document.getElementById(
-        "replyTo"
-    ).textContent =
-        data.email.reply_to ||
-        "Not available";
+        const email =
+            data.email || {};
 
 
-    document.getElementById(
-        "urlCount"
-    ).textContent =
-        data.email.urls_found;
+        document.getElementById("emailInfo").innerHTML =
+
+            `<strong>From:</strong> ${escapeHtml(email.from || "Unknown")}<br>
+             <strong>To:</strong> ${escapeHtml(email.to || "Unknown")}<br>
+             <strong>Subject:</strong> ${escapeHtml(email.subject || "No subject")}`;
 
 
-    fillList(
-        "reasons",
-        data.reasons,
-        "No specific suspicious indicators detected."
-    );
-
-
-    const urlList =
-        document.getElementById(
-            "urls"
+        fillList(
+            "reasons",
+            data.reasons || [],
+            "No major indicators detected."
         );
 
-    urlList.innerHTML = "";
+
+        const urls = (data.urls || []).map(
+            item => {
+
+                if (typeof item === "string") {
+                    return item;
+                }
+
+                return JSON.stringify(item);
+            }
+        );
 
 
-    if (data.urls.length === 0) {
-
-        addListItem(
-            urlList,
+        fillList(
+            "urls",
+            urls,
             "No URLs detected."
         );
 
-    } else {
 
-        data.urls.forEach(
-            item => {
-
-                addListItem(
-                    urlList,
-                    item.url +
-                    " — evidence score: " +
-                    item.score
-                );
-
-            }
+        fillList(
+            "attachments",
+            data.attachments || [],
+            "No attachments detected."
         );
 
-    }
+
+        const threatIntel =
+            data.threat_intelligence || [];
 
 
-    fillList(
-        "attachments",
-        data.email.attachments,
-        "No attachments detected."
-    );
+        if (Array.isArray(threatIntel)) {
 
+            fillList(
+                "threatIntel",
+                threatIntel.map(
+                    item =>
+                        typeof item === "string"
+                            ? item
+                            : JSON.stringify(item)
+                ),
+                "No external threat intelligence matches."
+            );
 
-    const ti =
-        document.getElementById(
-            "threatIntel"
-        );
+        } else {
 
-    ti.innerHTML = "";
-
-
-    if (
-        data.threat_intelligence.length === 0
-    ) {
-
-        ti.textContent =
-            "No URLs available for threat-intelligence lookup.";
-
-    } else {
-
-        data.threat_intelligence.forEach(
-            item => {
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-                div.className =
-                    "info-row";
-
-
-                div.textContent =
-                    item.url +
-                    " | " +
-                    (
-                        item.phishtank.match
-                        ? "PhishTank: MATCH"
-                        : "PhishTank: No match"
-                    ) +
-                    " | " +
-                    (
-                        item.urlhaus.match
-                        ? "URLhaus: MATCH"
-                        : "URLhaus: No match"
-                    );
-
-
-                ti.appendChild(div);
-
-            }
-        );
-
-    }
-
-
-    results.scrollIntoView({
-        behavior: "smooth"
-    });
-
-}
-
-
-function fillList(
-    id,
-    items,
-    emptyText
-) {
-
-    const list =
-        document.getElementById(id);
-
-    list.innerHTML = "";
-
-
-    if (
-        !items ||
-        items.length === 0
-    ) {
-
-        addListItem(
-            list,
-            emptyText
-        );
-
-        return;
-    }
-
-
-    items.forEach(
-        item => {
-
-            addListItem(
-                list,
-                item
+            fillList(
+                "threatIntel",
+                [JSON.stringify(threatIntel)],
+                "No external threat intelligence matches."
             );
 
         }
-    );
-
-}
 
 
-function addListItem(
-    list,
-    text
-) {
+        document.getElementById("limitation").textContent =
+            data.limitations ||
+            "This analysis is evidence-based and is not a guarantee that an email is safe.";
 
-    const li =
-        document.createElement(
-            "li"
-        );
 
-    li.textContent =
-        text;
+        results.scrollIntoView({
+            behavior: "smooth"
+        });
 
-    list.appendChild(li);
+    }
 
-}
+
+    function fillList(id, items, emptyText) {
+
+        const element =
+            document.getElementById(id);
+
+        element.innerHTML = "";
+
+
+        if (!items || items.length === 0) {
+
+            const li =
+                document.createElement("li");
+
+            li.textContent = emptyText;
+
+            element.appendChild(li);
+
+            return;
+        }
+
+
+        items.forEach(item => {
+
+            const li =
+                document.createElement("li");
+
+            li.textContent = item;
+
+            element.appendChild(li);
+
+        });
+
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
 
 </script>
 
 </body>
 </html>
+```
