@@ -1,13 +1,27 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>InboxGuard — Email Security Analyzer</title>
 
+    <!-- Browser tab icon -->
+    <link
+        rel="icon"
+        type="image/png"
+        href="/static/favicon.png"
+    >
+
     <style>
+
         :root {
             --bg: #f5f7fb;
             --card: #ffffff;
@@ -15,7 +29,8 @@
             --muted: #667085;
             --primary: #2563eb;
             --border: #e5e7eb;
-            --shadow: 0 12px 35px rgba(0,0,0,0.08);
+            --shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+
             --danger: #dc2626;
             --warning: #d97706;
             --safe: #16a34a;
@@ -28,7 +43,7 @@
             --muted: #94a3b8;
             --primary: #60a5fa;
             --border: #334155;
-            --shadow: 0 12px 35px rgba(0,0,0,0.35);
+            --shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
         }
 
         * {
@@ -55,6 +70,7 @@
             max-width: 1100px;
             margin: auto;
             padding: 18px 22px;
+
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -64,90 +80,107 @@
             display: flex;
             align-items: center;
             gap: 10px;
+
             font-size: 21px;
             font-weight: bold;
         }
 
         .brand-icon {
-            font-size: 28px;
-        }
-
-        button {
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
+            font-size: 27px;
         }
 
         .theme-btn {
             background: var(--bg);
             color: var(--text);
+
             border: 1px solid var(--border);
+
             padding: 9px 13px;
             border-radius: 10px;
+
+            cursor: pointer;
+            font-weight: bold;
         }
 
         .hero {
-            max-width: 1100px;
+            max-width: 900px;
             margin: auto;
-            padding: 60px 22px 35px;
+
+            padding: 75px 22px 45px;
+
             text-align: center;
         }
 
         .badge {
             display: inline-block;
+
             padding: 7px 13px;
+
             border-radius: 20px;
+
             background: rgba(37, 99, 235, 0.1);
+
             color: var(--primary);
+
             font-size: 12px;
             font-weight: bold;
+
             letter-spacing: 0.5px;
         }
 
         .hero h1 {
-            margin-top: 18px;
-            font-size: clamp(34px, 6vw, 58px);
+            margin-top: 20px;
+
+            font-size: clamp(36px, 6vw, 60px);
+
             line-height: 1.05;
         }
 
         .hero p {
             max-width: 700px;
-            margin: 20px auto;
-            color: var(--muted);
-            font-size: 18px;
-            line-height: 1.6;
-        }
 
-        .hero-image {
-            width: 170px;
-            height: 170px;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto 25px;
-            border-radius: 28px;
-            box-shadow: var(--shadow);
+            margin: 22px auto;
+
+            color: var(--muted);
+
+            font-size: 18px;
+
+            line-height: 1.6;
         }
 
         .container {
             max-width: 900px;
+
             margin: auto;
+
             padding: 20px 22px 60px;
         }
 
         .card {
             background: var(--card);
+
             border: 1px solid var(--border);
+
             border-radius: 20px;
+
             padding: 28px;
+
             box-shadow: var(--shadow);
         }
 
         .upload-box {
+            display: block;
+
             border: 2px dashed var(--border);
+
             border-radius: 16px;
-            padding: 35px 20px;
+
+            padding: 40px 20px;
+
             text-align: center;
+
             cursor: pointer;
+
             transition: 0.2s;
         }
 
@@ -156,8 +189,9 @@
         }
 
         .upload-icon {
-            font-size: 42px;
-            margin-bottom: 10px;
+            font-size: 45px;
+
+            margin-bottom: 12px;
         }
 
         .upload-box h2 {
@@ -174,65 +208,97 @@
 
         .file-name {
             margin-top: 15px;
+
             color: var(--primary);
+
             font-weight: bold;
         }
 
         .analyze-btn {
             width: 100%;
+
             margin-top: 18px;
+
             padding: 15px;
+
             border-radius: 12px;
+
+            border: none;
+
             background: var(--primary);
+
             color: white;
+
             font-size: 16px;
+
+            cursor: pointer;
+
+            font-weight: bold;
         }
 
         .analyze-btn:disabled {
             opacity: 0.5;
+
             cursor: not-allowed;
         }
 
         .status {
             text-align: center;
+
             margin-top: 15px;
+
             color: var(--muted);
         }
 
         .topics {
             margin-top: 25px;
+
             display: grid;
+
             grid-template-columns: repeat(3, 1fr);
+
             gap: 14px;
         }
 
         .topic {
             padding: 18px;
+
             border: 1px solid var(--border);
+
             border-radius: 15px;
+
             background: var(--card);
         }
 
         .topic strong {
             display: block;
+
             margin-bottom: 6px;
         }
 
         .topic span {
             color: var(--muted);
+
             font-size: 13px;
+
+            line-height: 1.4;
         }
 
         #results {
             display: none;
+
             margin-top: 30px;
         }
 
         .verdict {
             padding: 20px;
+
             border-radius: 15px;
+
             margin-bottom: 20px;
+
             text-align: center;
+
             border: 1px solid var(--border);
         }
 
@@ -242,14 +308,19 @@
 
         .score {
             font-size: 42px;
+
             font-weight: bold;
+
             margin-top: 8px;
         }
 
         .section {
             margin-top: 20px;
+
             padding: 20px;
+
             border: 1px solid var(--border);
+
             border-radius: 15px;
         }
 
@@ -259,6 +330,7 @@
 
         .section p {
             color: var(--muted);
+
             line-height: 1.6;
         }
 
@@ -268,7 +340,10 @@
 
         li {
             margin: 7px 0;
+
             color: var(--muted);
+
+            line-height: 1.5;
         }
 
         .high {
@@ -285,74 +360,116 @@
 
         footer {
             text-align: center;
+
             padding: 30px;
+
             color: var(--muted);
+
             font-size: 13px;
         }
 
         @media (max-width: 700px) {
+
             .topics {
                 grid-template-columns: 1fr;
             }
 
             .hero {
-                padding-top: 40px;
+                padding-top: 45px;
             }
 
             .card {
                 padding: 18px;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <header>
+
     <div class="nav">
+
         <div class="brand">
-            <span class="brand-icon">📧🔒</span>
-            <span>InboxGuard</span>
+
+            <span class="brand-icon">
+                📧🔒
+            </span>
+
+            <span>
+                InboxGuard
+            </span>
+
         </div>
 
-        <button class="theme-btn" onclick="toggleTheme()">
+
+        <button
+            class="theme-btn"
+            onclick="toggleTheme()"
+        >
             🌙 Theme
         </button>
+
     </div>
+
 </header>
+
+
 
 <section class="hero">
 
-    <img
-        src="/static/hero.png"
-        class="hero-image"
-        alt="InboxGuard email security"
-    >
+    <span class="badge">
+        EMAIL SECURITY ANALYZER
+    </span>
 
-    <span class="badge">EMAIL SECURITY ANALYZER</span>
 
-    <h1>Protect your inbox with InboxGuard</h1>
+    <h1>
+        Protect your inbox with InboxGuard
+    </h1>
+
 
     <p>
-        Upload an email and analyze its headers, links, attachments,
-        authentication signals and available threat intelligence.
+        Upload an email and analyze its headers,
+        links, attachments, authentication signals
+        and available threat intelligence.
     </p>
 
 </section>
 
+
+
 <main class="container">
+
+
+    <!-- EMAIL UPLOAD -->
 
     <div class="card">
 
-        <label class="upload-box" for="emailFile">
+        <label
+            class="upload-box"
+            for="emailFile"
+        >
 
-            <div class="upload-icon">📨</div>
+            <div class="upload-icon">
+                📨
+            </div>
 
-            <h2>Upload an email</h2>
+
+            <h2>
+                Upload an email
+            </h2>
+
 
             <p>
                 Select a .eml file to begin security analysis
             </p>
+
 
             <input
                 id="emailFile"
@@ -361,11 +478,16 @@
                 onchange="fileSelected()"
             >
 
-            <div id="fileName" class="file-name">
+
+            <div
+                id="fileName"
+                class="file-name"
+            >
                 No file selected
             </div>
 
         </label>
+
 
         <button
             id="analyzeBtn"
@@ -376,123 +498,223 @@
             Analyze Email
         </button>
 
-        <div id="status" class="status"></div>
+
+        <div
+            id="status"
+            class="status"
+        ></div>
 
     </div>
 
+
+
+    <!-- TOPICS -->
 
     <div class="topics">
 
-        <div class="topic">
-            <strong>🎣 Phishing Detection</strong>
-            <span>Detect suspicious phishing indicators.</span>
-        </div>
 
         <div class="topic">
-            <strong>👤 Sender Verification</strong>
-            <span>Check sender and Reply-To mismatches.</span>
+
+            <strong>
+                🎣 Phishing Detection
+            </strong>
+
+            <span>
+                Detect suspicious phishing indicators.
+            </span>
+
         </div>
 
-        <div class="topic">
-            <strong>🔗 URL Analysis</strong>
-            <span>Inspect suspicious links and domains.</span>
-        </div>
 
         <div class="topic">
-            <strong>🛡️ SPF / DKIM / DMARC</strong>
-            <span>Inspect available authentication results.</span>
+
+            <strong>
+                👤 Sender Verification
+            </strong>
+
+            <span>
+                Check sender and Reply-To mismatches.
+            </span>
+
         </div>
 
-        <div class="topic">
-            <strong>📎 Attachment Analysis</strong>
-            <span>Identify potentially dangerous file types.</span>
-        </div>
 
         <div class="topic">
-            <strong>🌐 Threat Intelligence</strong>
-            <span>Use available external threat intelligence.</span>
+
+            <strong>
+                🔗 URL Analysis
+            </strong>
+
+            <span>
+                Inspect suspicious links and domains.
+            </span>
+
         </div>
+
+
+        <div class="topic">
+
+            <strong>
+                🛡️ SPF / DKIM / DMARC
+            </strong>
+
+            <span>
+                Inspect available authentication results.
+            </span>
+
+        </div>
+
+
+        <div class="topic">
+
+            <strong>
+                📎 Attachment Analysis
+            </strong>
+
+            <span>
+                Identify potentially dangerous file types.
+            </span>
+
+        </div>
+
+
+        <div class="topic">
+
+            <strong>
+                🌐 Threat Intelligence
+            </strong>
+
+            <span>
+                Use available external threat intelligence.
+            </span>
+
+        </div>
+
 
     </div>
 
+
+
+    <!-- RESULTS -->
 
     <div id="results">
 
         <div class="card">
 
+
             <div class="verdict">
-                <h2 id="verdict">Analysis Result</h2>
-                <div id="score" class="score">0/100</div>
+
+                <h2 id="verdict">
+                    Analysis Result
+                </h2>
+
+                <div
+                    id="score"
+                    class="score"
+                >
+                    0/100
+                </div>
+
             </div>
+
 
 
             <div class="section">
 
-                <h3>📧 Email Information</h3>
+                <h3>
+                    📧 Email Information
+                </h3>
 
                 <p id="emailInfo"></p>
 
             </div>
 
 
+
             <div class="section">
 
-                <h3>🚨 Detected Indicators</h3>
+                <h3>
+                    🚨 Detected Indicators
+                </h3>
 
                 <ul id="reasons"></ul>
 
             </div>
 
 
+
             <div class="section">
 
-                <h3>🔗 URLs</h3>
+                <h3>
+                    🔗 URLs
+                </h3>
 
                 <ul id="urls"></ul>
 
             </div>
 
 
+
             <div class="section">
 
-                <h3>📎 Attachments</h3>
+                <h3>
+                    📎 Attachments
+                </h3>
 
                 <ul id="attachments"></ul>
 
             </div>
 
 
+
             <div class="section">
 
-                <h3>🌐 Threat Intelligence</h3>
+                <h3>
+                    🌐 Threat Intelligence
+                </h3>
 
                 <ul id="threatIntel"></ul>
 
             </div>
 
 
+
             <div class="section">
 
-                <h3>ℹ️ Limitation</h3>
+                <h3>
+                    ℹ️ Limitation
+                </h3>
 
                 <p id="limitation"></p>
+
             </div>
+
 
         </div>
 
     </div>
 
+
 </main>
 
+
+
 <footer>
+
     InboxGuard — Evidence-based email security analysis
+
 </footer>
+
 
 
 <script>
 
+
     let selectedFile = null;
 
+
+
+    // THEME
 
     function toggleTheme() {
 
@@ -504,38 +726,65 @@
                 ? "dark"
                 : "light"
         );
+
     }
 
 
-    if (localStorage.getItem("theme") === "dark") {
+
+    if (
+        localStorage.getItem("theme") === "dark"
+    ) {
+
         document.body.classList.add("dark");
+
     }
 
+
+
+    // FILE SELECTED
 
     function fileSelected() {
 
-        const input = document.getElementById("emailFile");
+        const input =
+            document.getElementById("emailFile");
 
         selectedFile = input.files[0];
 
-        const fileName = document.getElementById("fileName");
-        const analyzeBtn = document.getElementById("analyzeBtn");
+
+        const fileName =
+            document.getElementById("fileName");
+
+        const analyzeBtn =
+            document.getElementById("analyzeBtn");
+
 
         if (selectedFile) {
 
-            fileName.textContent = selectedFile.name;
+            fileName.textContent =
+                selectedFile.name;
+
 
             analyzeBtn.disabled =
-                !selectedFile.name.toLowerCase().endsWith(".eml");
+                !selectedFile.name
+                    .toLowerCase()
+                    .endsWith(".eml");
 
-        } else {
+        }
 
-            fileName.textContent = "No file selected";
+        else {
+
+            fileName.textContent =
+                "No file selected";
+
             analyzeBtn.disabled = true;
 
         }
+
     }
 
+
+
+    // ANALYZE EMAIL
 
     async function analyzeEmail() {
 
@@ -543,35 +792,51 @@
             return;
         }
 
-        const status = document.getElementById("status");
-        const button = document.getElementById("analyzeBtn");
 
-        status.textContent = "Analyzing email...";
+        const status =
+            document.getElementById("status");
+
+        const button =
+            document.getElementById("analyzeBtn");
+
+
+        status.textContent =
+            "Analyzing email...";
+
         button.disabled = true;
 
-        const formData = new FormData();
 
-        formData.append("file", selectedFile);
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            selectedFile
+        );
 
 
         try {
 
-            const response = await fetch(
-                "/api/analyze",
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
+            const response =
+                await fetch(
+                    "/api/analyze",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
 
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
 
             if (!response.ok) {
 
                 throw new Error(
-                    data.detail || "Analysis failed"
+                    data.detail ||
+                    "Analysis failed"
                 );
 
             }
@@ -579,67 +844,109 @@
 
             displayResults(data);
 
+
             status.textContent =
                 "Analysis completed successfully.";
 
-        } catch (error) {
+        }
+
+
+        catch (error) {
 
             status.textContent =
                 "Error: " + error.message;
 
-        } finally {
+        }
+
+
+        finally {
 
             button.disabled = false;
 
         }
+
     }
 
+
+
+    // DISPLAY RESULTS
 
     function displayResults(data) {
 
         const results =
             document.getElementById("results");
 
-        results.style.display = "block";
+
+        results.style.display =
+            "block";
 
 
-        document.getElementById("score").textContent =
+        document.getElementById("score")
+            .textContent =
             `${data.score}/100`;
 
 
         const verdict =
             document.getElementById("verdict");
 
+
         verdict.textContent =
-            data.verdict || "Analysis Result";
+            data.verdict ||
+            "Analysis Result";
 
 
         verdict.className = "";
+
 
         if (data.score >= 70) {
 
             verdict.classList.add("high");
 
-        } else if (data.score >= 40) {
+        }
 
-            verdict.classList.add("suspicious");
+        else if (data.score >= 40) {
 
-        } else {
+            verdict.classList.add(
+                "suspicious"
+            );
+
+        }
+
+        else {
 
             verdict.classList.add("low");
 
         }
 
 
+
         const email =
             data.email || {};
 
 
-        document.getElementById("emailInfo").innerHTML =
+        document.getElementById(
+            "emailInfo"
+        ).innerHTML =
 
-            `<strong>From:</strong> ${escapeHtml(email.from || "Unknown")}<br>
-             <strong>To:</strong> ${escapeHtml(email.to || "Unknown")}<br>
-             <strong>Subject:</strong> ${escapeHtml(email.subject || "No subject")}`;
+            `<strong>From:</strong>
+            ${escapeHtml(
+                email.from || "Unknown"
+            )}
+
+            <br>
+
+            <strong>To:</strong>
+            ${escapeHtml(
+                email.to || "Unknown"
+            )}
+
+            <br>
+
+            <strong>Subject:</strong>
+            ${escapeHtml(
+                email.subject || "No subject"
+            )}`;
+
 
 
         fillList(
@@ -649,16 +956,24 @@
         );
 
 
-        const urls = (data.urls || []).map(
-            item => {
 
-                if (typeof item === "string") {
-                    return item;
+        const urls =
+            (data.urls || []).map(
+                item => {
+
+                    if (
+                        typeof item ===
+                        "string"
+                    ) {
+
+                        return item;
+
+                    }
+
+                    return JSON.stringify(item);
+
                 }
-
-                return JSON.stringify(item);
-            }
-        );
+            );
 
 
         fillList(
@@ -668,6 +983,7 @@
         );
 
 
+
         fillList(
             "attachments",
             data.attachments || [],
@@ -675,37 +991,63 @@
         );
 
 
+
         const threatIntel =
-            data.threat_intelligence || [];
+            data.threat_intelligence ||
+            [];
 
 
-        if (Array.isArray(threatIntel)) {
+        if (
+            Array.isArray(
+                threatIntel
+            )
+        ) {
 
             fillList(
                 "threatIntel",
+
                 threatIntel.map(
                     item =>
-                        typeof item === "string"
+
+                        typeof item ===
+                        "string"
+
                             ? item
+
                             : JSON.stringify(item)
                 ),
+
                 "No external threat intelligence matches."
             );
 
-        } else {
+        }
+
+        else {
 
             fillList(
                 "threatIntel",
-                [JSON.stringify(threatIntel)],
+
+                [
+                    JSON.stringify(
+                        threatIntel
+                    )
+                ],
+
                 "No external threat intelligence matches."
             );
 
         }
 
 
-        document.getElementById("limitation").textContent =
+
+        document.getElementById(
+            "limitation"
+        ).textContent =
+
             data.limitations ||
+
             "This analysis is evidence-based and is not a guarantee that an email is safe.";
+
 
 
         results.scrollIntoView({
@@ -715,24 +1057,40 @@
     }
 
 
-    function fillList(id, items, emptyText) {
+
+    // LIST HELPER
+
+    function fillList(
+        id,
+        items,
+        emptyText
+    ) {
 
         const element =
             document.getElementById(id);
 
+
         element.innerHTML = "";
 
 
-        if (!items || items.length === 0) {
+        if (
+            !items ||
+            items.length === 0
+        ) {
 
             const li =
                 document.createElement("li");
 
-            li.textContent = emptyText;
+
+            li.textContent =
+                emptyText;
+
 
             element.appendChild(li);
 
+
             return;
+
         }
 
 
@@ -741,7 +1099,10 @@
             const li =
                 document.createElement("li");
 
-            li.textContent = item;
+
+            li.textContent =
+                item;
+
 
             element.appendChild(li);
 
@@ -750,19 +1111,44 @@
     }
 
 
+
+    // HTML ESCAPE
+
     function escapeHtml(value) {
 
         return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
+
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
 
     }
 
 </script>
 
+
 </body>
+
 </html>
-```
+
