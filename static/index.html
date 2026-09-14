@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>InboxGuard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0b1020;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1000px, 92%);
+            margin: auto;
+            padding: 50px 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #aeb7d0;
+            font-size: 17px;
+        }
+
+        .card {
+            background: #151c31;
+            border: 1px solid #293451;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 25px;
+        }
+
+        .upload-area {
+            border: 2px dashed #3d4b70;
+            border-radius: 15px;
+            padding: 35px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            color: white;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #4f7cff;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 18px;
+            color: #aeb7d0;
+        }
+
+        .result {
+            display: none;
+        }
+
+        .verdict {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .score {
+            font-size: 20px;
+            color: #aeb7d0;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        .section h3 {
+            margin-bottom: 10px;
+        }
+
+        .info {
+            background: #0e1528;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 8px 0;
+            word-break: break-word;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 8px 0;
+            color: #d5dbeb;
+        }
+
+        .warning {
+            color: #ffcc66;
+            line-height: 1.6;
+        }
+
+        .error {
+            color: #ff7777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>InboxGuard</h1>
+        <div class="subtitle">
+            Evidence-based phishing email analysis
+        </div>
+    </header>
+
+    <div class="card">
+
+        <div class="upload-area">
+
+            <h2>Analyze an Email</h2>
+
+            <p>
+                Upload an <strong>.eml</strong> email file.
+            </p>
+
+            <input
+                type="file"
+                id="emailFile"
+                accept=".eml"
+            >
+
+            <br>
+
+            <button id="analyzeBtn">
+                Analyze Email
+            </button>
+
+            <div id="status"></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card result" id="result">
+
+        <div id="verdict" class="verdict"></div>
+
+        <div id="score" class="score"></div>
+
+
+        <div class="section">
+
+            <h3>Email Information</h3>
+
+            <div class="info">
+                <strong>Subject:</strong>
+                <span id="subject"></span>
+            </div>
+
+            <div class="info">
+                <strong>From:</strong>
+                <span id="from"></span>
+            </div>
+
+            <div class="info">
+                <strong>Reply-To:</strong>
+                <span id="replyTo"></span>
+            </div>
+
+            <div class="info">
+                <strong>URLs Found:</strong>
+                <span id="urlCount"></span>
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <h3>Reasons</h3>
+
+            <ul id="reasons"></ul>
+
+        </div>
+
+
+        <div class="section">
+
+            <h3>Detected URLs</h3>
+
+            <ul id="urls"></ul>
+
+        </div>
+
+
+        <div class="section">
+
+            <h3>Attachments</h3>
+
+            <ul id="attachments"></ul>
+
+        </div>
+
+
+        <div class="section">
+
+            <h3>Threat Intelligence</h3>
+
+            <div id="threatIntel"></div>
+
+        </div>
+
+
+        <div class="section">
+
+            <h3>Important Limitation</h3>
+
+            <p class="warning">
+                A LOW RISK result does not guarantee that an email is safe.
+                Threat-intelligence databases may not contain newly created
+                malicious URLs, and authentication headers may be missing
+                from uploaded email files.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const fileInput = document.getElementById("emailFile");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const statusBox = document.getElementById("status");
+const resultBox = document.getElementById("result");
+
+
+analyzeBtn.addEventListener("click", async () => {
+
+    const file = fileInput.files[0];
+
+    if (!file) {
+        statusBox.innerHTML =
+            '<span class="error">Please select an .eml file.</span>';
+        return;
+    }
+
+
+    if (!file.name.toLowerCase().endsWith(".eml")) {
+        statusBox.innerHTML =
+            '<span class="error">Only .eml files are supported.</span>';
+        return;
+    }
+
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+
+    analyzeBtn.disabled = true;
+
+    statusBox.textContent = "Analyzing email...";
+    resultBox.style.display = "none";
+
+
+    try {
+
+        const response = await fetch("/api/analyze", {
+            method: "POST",
+            body: formData
+        });
+
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+            data = JSON.parse(text);
+        } catch {
+            throw new Error(
+                "Server returned an invalid response."
+            );
+        }
+
+
+        if (!response.ok || data.success === false) {
+            throw new Error(
+                data.detail ||
+                data.error ||
+                "Analysis failed."
+            );
+        }
+
+
+        showResults(data);
+
+        statusBox.textContent =
+            "Analysis completed.";
+
+
+    } catch (error) {
+
+        statusBox.innerHTML =
+            '<span class="error">' +
+            error.message +
+            '</span>';
+
+    } finally {
+
+        analyzeBtn.disabled = false;
+
+    }
+
+});
+
+
+function showResults(data) {
+
+    resultBox.style.display = "block";
+
+
+    document.getElementById("verdict").textContent =
+        data.verdict;
+
+
+    document.getElementById("score").textContent =
+        "Evidence score: " + data.risk_score + "/100";
+
+
+    document.getElementById("subject").textContent =
+        data.email.subject || "Not available";
+
+
+    document.getElementById("from").textContent =
+        data.email.from || "Not available";
+
+
+    document.getElementById("replyTo").textContent =
+        data.email.reply_to || "Not available";
+
+
+    document.getElementById("urlCount").textContent =
+        data.email.urls_found;
+
+
+    const reasons = document.getElementById("reasons");
+
+    reasons.innerHTML = "";
+
+
+    if (data.reasons.length === 0) {
+
+        const li = document.createElement("li");
+
+        li.textContent =
+            "No specific suspicious indicators were detected.";
+
+        reasons.appendChild(li);
+
+    } else {
+
+        data.reasons.forEach(reason => {
+
+            const li = document.createElement("li");
+
+            li.textContent = reason;
+
+            reasons.appendChild(li);
+
+        });
+
+    }
+
+
+    const urls = document.getElementById("urls");
+
+    urls.innerHTML = "";
+
+
+    if (data.urls.length === 0) {
+
+        const li = document.createElement("li");
+
+        li.textContent = "No URLs detected.";
+
+        urls.appendChild(li);
+
+    } else {
+
+        data.urls.forEach(item => {
+
+            const li = document.createElement("li");
+
+            li.textContent =
+                item.url +
+                " — score " +
+                item.score;
+
+            urls.appendChild(li);
+
+        });
+
+    }
+
+
+    const attachments =
+        document.getElementById("attachments");
+
+    attachments.innerHTML = "";
+
+
+    if (data.email.attachments.length === 0) {
+
+        const li = document.createElement("li");
+
+        li.textContent = "No attachments detected.";
+
+        attachments.appendChild(li);
+
+    } else {
+
+        data.email.attachments.forEach(name => {
+
+            const li = document.createElement("li");
+
+            li.textContent = name;
+
+            attachments.appendChild(li);
+
+        });
+
+    }
+
+
+    const threatIntel =
+        document.getElementById("threatIntel");
+
+    threatIntel.innerHTML = "";
+
+
+    if (data.threat_intelligence.length === 0) {
+
+        threatIntel.textContent =
+            "No URLs available for threat-intelligence lookup.";
+
+    } else {
+
+        data.threat_intelligence.forEach(item => {
+
+            const div = document.createElement("div");
+
+            div.className = "info";
+
+            const phish =
+                item.phishtank.match
+                    ? "PhishTank: MATCH"
+                    : "PhishTank: No match";
+
+            const urlhaus =
+                item.urlhaus.match
+                    ? "URLhaus: MATCH"
+                    : "URLhaus: No match";
+
+            div.textContent =
+                item.url +
+                " | " +
+                phish +
+                " | " +
+                urlhaus;
+
+            threatIntel.appendChild(div);
+
+        });
+
+    }
+
+
+    resultBox.scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+</script>
+
+</body>
+</html>
