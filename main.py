@@ -1,4 +1,3 @@
-```python
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -13,27 +12,19 @@ import requests
 
 app = FastAPI(
     title="InboxGuard",
-    version="5.0"
+    version="5.1"
 )
 
-# Serve static files including favicon.png
+APP_VERSION = "5.1"
+MAX_FILE_SIZE = 5 * 1024 * 1024
+
+PHISHTANK_APP_KEY = os.getenv("PHISHTANK_APP_KEY", "")
+URLHAUS_AUTH_KEY = os.getenv("URLHAUS_AUTH_KEY", "")
+
 app.mount(
     "/static",
     StaticFiles(directory="static"),
     name="static"
-)
-
-APP_VERSION = "5.0"
-MAX_FILE_SIZE = 5 * 1024 * 1024
-
-PHISHTANK_APP_KEY = os.getenv(
-    "PHISHTANK_APP_KEY",
-    ""
-)
-
-URLHAUS_AUTH_KEY = os.getenv(
-    "URLHAUS_AUTH_KEY",
-    ""
 )
 
 
@@ -179,20 +170,11 @@ def analyze_headers(message):
     reasons = []
     score = 0
 
-    sender = str(
-        message.get("From", "")
-    )
-
-    reply_to = str(
-        message.get("Reply-To", "")
-    )
-
-    subject = str(
-        message.get("Subject", "")
-    )
+    sender = str(message.get("From", ""))
+    reply_to = str(message.get("Reply-To", ""))
+    subject = str(message.get("Subject", ""))
 
     if sender and reply_to:
-
         sender_domain = re.search(
             r'@([A-Za-z0-9.-]+)',
             sender
@@ -204,7 +186,6 @@ def analyze_headers(message):
         )
 
         if sender_domain and reply_domain:
-
             if (
                 sender_domain.group(1).lower()
                 != reply_domain.group(1).lower()
@@ -222,20 +203,12 @@ def analyze_headers(message):
         "Received-SPF",
         "DKIM-Signature"
     ]:
-
-        values = message.get_all(
-            key,
-            []
-        )
+        values = message.get_all(key, [])
 
         for value in values:
-            auth_headers.append(
-                str(value)
-            )
+            auth_headers.append(str(value))
 
-    auth_text = " ".join(
-        auth_headers
-    ).lower()
+    auth_text = " ".join(auth_headers).lower()
 
     if "dmarc=fail" in auth_text:
         reasons.append(
@@ -309,10 +282,7 @@ def analyze_attachments(message):
 
     for part in message.walk():
 
-        if (
-            part.get_content_disposition()
-            != "attachment"
-        ):
+        if part.get_content_disposition() != "attachment":
             continue
 
         filename = part.get_filename()
@@ -325,9 +295,7 @@ def analyze_attachments(message):
         lower_name = filename.lower()
 
         for extension in dangerous_extensions:
-
             if lower_name.endswith(extension):
-
                 reasons.append(
                     f"Potentially dangerous attachment: {filename}"
                 )
@@ -343,7 +311,6 @@ def analyze_attachments(message):
 
 
 def check_phishtank(url):
-
     if not PHISHTANK_APP_KEY:
         return {
             "status": "not_configured",
@@ -351,7 +318,6 @@ def check_phishtank(url):
         }
 
     try:
-
         response = requests.post(
             "https://checkurl.phishtank.com/checkurl/",
             data={
@@ -370,22 +336,21 @@ def check_phishtank(url):
 
         data = response.json()
 
-        results = data.get(
-            "results",
-            {}
+        results = data.get("results", {})
+
+        in_database = bool(
+            results.get("in_database")
+        )
+
+        verified = bool(
+            results.get("verified")
         )
 
         return {
             "status": "checked",
-            "match": bool(
-                results.get("in_database")
-            ),
-            "verified": bool(
-                results.get("verified")
-            ),
-            "phish_id": results.get(
-                "phish_id"
-            )
+            "match": in_database,
+            "verified": verified,
+            "phish_id": results.get("phish_id")
         }
 
     except Exception:
@@ -396,7 +361,6 @@ def check_phishtank(url):
 
 
 def check_urlhaus(url):
-
     if not URLHAUS_AUTH_KEY:
         return {
             "status": "not_configured",
@@ -404,7 +368,6 @@ def check_urlhaus(url):
         }
 
     try:
-
         response = requests.post(
             "https://urlhaus-api.abuse.ch/v1/url/",
             data={
@@ -424,17 +387,35 @@ def check_urlhaus(url):
 
         data = response.json()
 
+        query_status = data.get(
+            "query_status"
+        )
+
+        url_status = data.get(
+            "url_status"
+        )
+
+        threat = data.get(
+            "threat"
+        )
+
+        is_match = (
+            query_status == "ok"
+            and (
+                url_status in {
+                    "online",
+                    "offline"
+                }
+                or bool(threat)
+            )
+        )
+
         return {
             "status": "checked",
-            "match": data.get(
-                "query_status"
-            ) == "ok",
-            "threat": data.get(
-                "threat"
-            ),
-            "url_status": data.get(
-                "url_status"
-            )
+            "match": is_match,
+            "query_status": query_status,
+            "threat": threat,
+            "url_status": url_status
         }
 
     except Exception:
@@ -442,6 +423,44 @@ def check_urlhaus(url):
             "status": "unavailable",
             "match": False
         }
+
+
+def extract_email_body(message):
+    body_parts = []
+
+    if message.is_multipart():
+
+        for part in message.walk():
+
+            content_type = part.get_content_type()
+
+            if content_type != "text/plain":
+                continue
+
+            if part.get_content_disposition() == "attachment":
+                continue
+
+            try:
+                content = part.get_content()
+
+                if content:
+                    body_parts.append(str(content))
+
+            except Exception:
+                pass
+
+    else:
+
+        try:
+            content = message.get_content()
+
+            if content:
+                body_parts.append(str(content))
+
+        except Exception:
+            pass
+
+    return "\n".join(body_parts)
 
 
 @app.post("/api/analyze")
@@ -496,33 +515,7 @@ async def analyze_email(
         message.get("Subject", "")
     )
 
-    body_parts = []
-
-    if message.is_multipart():
-
-        for part in message.walk():
-
-            if part.get_content_type() == "text/plain":
-
-                try:
-                    body_parts.append(
-                        part.get_content()
-                    )
-
-                except Exception:
-                    pass
-
-    else:
-
-        try:
-            body_parts.append(
-                message.get_content()
-            )
-
-        except Exception:
-            pass
-
-    body = "\n".join(body_parts)
+    body = extract_email_body(message)
 
     urls = extract_urls(body)
 
@@ -625,10 +618,8 @@ async def analyze_email(
     return {
         "success": True,
 
-        # Frontend uses data.score
         "score": total_score,
 
-        # Also keep this for API compatibility
         "risk_score": total_score,
 
         "verdict": verdict,
@@ -647,25 +638,27 @@ async def analyze_email(
             "attachments"
         ],
 
-        "threat_intelligence":
-            threat_intelligence,
+        "threat_intelligence": threat_intelligence,
 
         "reasons": reasons,
 
         "score_breakdown": {
             "url_score": url_score,
-            "header_score":
-                header_result["score"],
-            "attachment_score":
-                attachment_score,
-            "threat_intelligence_score":
-                threat_score
+            "header_score": header_result["score"],
+            "attachment_score": attachment_score,
+            "threat_intelligence_score": threat_score
         },
 
-        "analysis_method":
-            "Evidence-based heuristic analysis with optional external threat intelligence.",
+        "analysis_method": (
+            "Evidence-based heuristic analysis with "
+            "optional external threat intelligence."
+        ),
 
-        "limitations":
-            "The score is an evidence-based risk score, not a calibrated probability. A LOW RISK result does not guarantee that an email is safe. Newly created malicious infrastructure may not yet appear in threat intelligence databases."
+        "limitations": (
+            "The score is an evidence-based risk score, "
+            "not a calibrated probability. A LOW RISK result "
+            "does not guarantee that an email is safe. "
+            "Newly created malicious infrastructure may not "
+            "yet appear in threat intelligence databases."
+        )
     }
-```
