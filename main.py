@@ -1,31 +1,69 @@
 ```python
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 from email import policy
 from email.parser import BytesParser
+
 from urllib.parse import urlparse
+
 import os
 import re
 import ipaddress
 import requests
 
 
-app = FastAPI(title="InboxGuard")
+# ============================================================
+# APP
+# ============================================================
 
-APP_VERSION = "5.0"
-MAX_FILE_SIZE = 5 * 1024 * 1024
-
-PHISHTANK_APP_KEY = os.getenv("PHISHTANK_APP_KEY", "")
-URLHAUS_AUTH_KEY = os.getenv("URLHAUS_AUTH_KEY", "")
+app = FastAPI(
+    title="InboxGuard",
+    version="5.0"
+)
 
 
 # ============================================================
-# FRONTEND
+# STATIC FILES
+# This makes:
+# /static/index.html
+# /static/favicon.png
+# available to the browser.
+# ============================================================
+
+app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static"
+)
+
+
+APP_VERSION = "5.0"
+
+MAX_FILE_SIZE = 5 * 1024 * 1024
+
+PHISHTANK_APP_KEY = os.getenv(
+    "PHISHTANK_APP_KEY",
+    ""
+)
+
+URLHAUS_AUTH_KEY = os.getenv(
+    "URLHAUS_AUTH_KEY",
+    ""
+)
+
+
+# ============================================================
+# HOME PAGE
 # ============================================================
 
 @app.get("/")
 def home():
-    return FileResponse("static/index.html")
+
+    return FileResponse(
+        "static/index.html"
+    )
 
 
 # ============================================================
@@ -34,6 +72,7 @@ def home():
 
 @app.get("/api/health")
 def health():
+
     return {
         "status": "ok",
         "service": "InboxGuard",
@@ -52,15 +91,21 @@ def extract_urls(text):
 
     pattern = r'https?://[^\s<>"\'\]\)]+'
 
-    urls = re.findall(pattern, text)
+    urls = re.findall(
+        pattern,
+        text
+    )
 
     cleaned = []
 
     for url in urls:
 
-        url = url.rstrip(".,;:")
+        url = url.rstrip(
+            ".,;:"
+        )
 
         if url not in cleaned:
+
             cleaned.append(url)
 
     return cleaned
@@ -73,6 +118,7 @@ def extract_urls(text):
 def analyze_url(url):
 
     reasons = []
+
     score = 0
 
     try:
@@ -81,16 +127,19 @@ def analyze_url(url):
 
         hostname = parsed.hostname
 
+
         if not hostname:
 
             return {
                 "url": url,
                 "score": 0,
-                "reasons": ["Invalid URL"]
+                "reasons": [
+                    "Invalid URL"
+                ]
             }
 
 
-        # HTTP instead of HTTPS
+        # HTTPS
 
         if parsed.scheme.lower() != "https":
 
@@ -105,7 +154,9 @@ def analyze_url(url):
 
         try:
 
-            ipaddress.ip_address(hostname)
+            ipaddress.ip_address(
+                hostname
+            )
 
             reasons.append(
                 "URL uses a direct IP address"
@@ -132,6 +183,7 @@ def analyze_url(url):
         # Suspicious words
 
         suspicious_words = [
+
             "login",
             "verify",
             "verification",
@@ -144,6 +196,7 @@ def analyze_url(url):
             "wallet",
             "signin",
             "authenticate"
+
         ]
 
 
@@ -151,9 +204,13 @@ def analyze_url(url):
 
 
         matches = [
+
             word
+
             for word in suspicious_words
+
             if word in lower_url
+
         ]
 
 
@@ -181,7 +238,7 @@ def analyze_url(url):
             score += 8
 
 
-        # Deep subdomains
+        # Deep subdomain
 
         if hostname.count(".") >= 4:
 
@@ -192,11 +249,13 @@ def analyze_url(url):
             score += 8
 
 
-        # Non ASCII domain
+        # Unicode domain
 
         try:
 
-            hostname.encode("ascii")
+            hostname.encode(
+                "ascii"
+            )
 
         except UnicodeEncodeError:
 
@@ -208,20 +267,31 @@ def analyze_url(url):
 
 
         return {
+
             "url": url,
-            "score": min(score, 40),
+
+            "score": min(
+                score,
+                40
+            ),
+
             "reasons": reasons
+
         }
 
 
     except Exception:
 
         return {
+
             "url": url,
+
             "score": 0,
+
             "reasons": [
                 "Unable to analyze URL"
             ]
+
         }
 
 
@@ -232,23 +302,36 @@ def analyze_url(url):
 def analyze_headers(message):
 
     reasons = []
+
     score = 0
 
+
     sender = str(
-        message.get("From", "")
+        message.get(
+            "From",
+            ""
+        )
     )
+
 
     reply_to = str(
-        message.get("Reply-To", "")
+        message.get(
+            "Reply-To",
+            ""
+        )
     )
 
+
     subject = str(
-        message.get("Subject", "")
+        message.get(
+            "Subject",
+            ""
+        )
     )
 
 
     # --------------------------------------------------------
-    # From / Reply-To mismatch
+    # FROM / REPLY-TO
     # --------------------------------------------------------
 
     if sender and reply_to:
@@ -258,13 +341,18 @@ def analyze_headers(message):
             sender
         )
 
+
         reply_domain = re.search(
             r'@([A-Za-z0-9.-]+)',
             reply_to
         )
 
 
-        if sender_domain and reply_domain:
+        if (
+            sender_domain
+            and
+            reply_domain
+        ):
 
             if (
                 sender_domain.group(1).lower()
@@ -280,22 +368,25 @@ def analyze_headers(message):
 
 
     # --------------------------------------------------------
-    # Authentication headers
+    # AUTHENTICATION
     # --------------------------------------------------------
 
     auth_headers = []
 
 
     for key in [
+
         "Authentication-Results",
         "Received-SPF",
         "DKIM-Signature"
+
     ]:
 
         values = message.get_all(
             key,
             []
         )
+
 
         for value in values:
 
@@ -337,16 +428,18 @@ def analyze_headers(message):
 
 
     # --------------------------------------------------------
-    # Urgency
+    # URGENCY
     # --------------------------------------------------------
 
     urgent_words = [
+
         "urgent",
         "immediately",
         "action required",
         "account suspended",
         "verify your account",
         "payment failed"
+
     ]
 
 
@@ -354,9 +447,13 @@ def analyze_headers(message):
 
 
     found_urgent = [
+
         word
+
         for word in urgent_words
+
         if word in subject_lower
+
     ]
 
 
@@ -373,8 +470,14 @@ def analyze_headers(message):
 
 
     return {
-        "score": min(score, 40),
+
+        "score": min(
+            score,
+            40
+        ),
+
         "reasons": reasons
+
     }
 
 
@@ -385,11 +488,14 @@ def analyze_headers(message):
 def analyze_attachments(message):
 
     reasons = []
+
     score = 0
+
     attachments = []
 
 
     dangerous_extensions = {
+
         ".exe",
         ".scr",
         ".bat",
@@ -401,6 +507,7 @@ def analyze_attachments(message):
         ".msi",
         ".jar",
         ".hta"
+
     }
 
 
@@ -447,9 +554,16 @@ def analyze_attachments(message):
 
 
     return {
-        "score": min(score, 40),
+
+        "score": min(
+            score,
+            40
+        ),
+
         "reasons": reasons,
+
         "attachments": attachments
+
     }
 
 
@@ -462,8 +576,11 @@ def check_phishtank(url):
     if not PHISHTANK_APP_KEY:
 
         return {
+
             "status": "not_configured",
+
             "match": False
+
         }
 
 
@@ -474,24 +591,34 @@ def check_phishtank(url):
             "https://checkurl.phishtank.com/checkurl/",
 
             data={
+
                 "url": url,
+
                 "format": "json",
-                "app_key": PHISHTANK_APP_KEY
+
+                "app_key":
+                    PHISHTANK_APP_KEY
+
             },
 
             timeout=6
+
         )
 
 
         if response.status_code != 200:
 
             return {
+
                 "status": "unavailable",
+
                 "match": False
+
             }
 
 
         data = response.json()
+
 
         results = data.get(
             "results",
@@ -519,14 +646,18 @@ def check_phishtank(url):
                 results.get(
                     "phish_id"
                 )
+
         }
 
 
     except Exception:
 
         return {
+
             "status": "unavailable",
+
             "match": False
+
         }
 
 
@@ -539,8 +670,11 @@ def check_urlhaus(url):
     if not URLHAUS_AUTH_KEY:
 
         return {
+
             "status": "not_configured",
+
             "match": False
+
         }
 
 
@@ -555,19 +689,25 @@ def check_urlhaus(url):
             },
 
             headers={
+
                 "Auth-Key":
                     URLHAUS_AUTH_KEY
+
             },
 
             timeout=6
+
         )
 
 
         if response.status_code != 200:
 
             return {
+
                 "status": "unavailable",
+
                 "match": False
+
             }
 
 
@@ -592,19 +732,23 @@ def check_urlhaus(url):
                 data.get(
                     "url_status"
                 )
+
         }
 
 
     except Exception:
 
         return {
+
             "status": "unavailable",
+
             "match": False
+
         }
 
 
 # ============================================================
-# MAIN EMAIL ANALYZER
+# MAIN ANALYZER
 # ============================================================
 
 @app.post("/api/analyze")
@@ -612,9 +756,8 @@ async def analyze_email(
     file: UploadFile = File(...)
 ):
 
-
     # --------------------------------------------------------
-    # File validation
+    # Validate file
     # --------------------------------------------------------
 
     if not file.filename:
@@ -654,7 +797,9 @@ async def analyze_email(
 
         message = BytesParser(
             policy=policy.default
-        ).parsebytes(content)
+        ).parsebytes(
+            content
+        )
 
     except Exception:
 
@@ -697,7 +842,7 @@ async def analyze_email(
 
 
     # --------------------------------------------------------
-    # Extract email body
+    # Extract body
     # --------------------------------------------------------
 
     body_parts = []
@@ -742,7 +887,7 @@ async def analyze_email(
 
 
     # --------------------------------------------------------
-    # URL analysis
+    # URLs
     # --------------------------------------------------------
 
     urls = extract_urls(
@@ -761,9 +906,9 @@ async def analyze_email(
 
     url_score = sum(
 
-        item["score"]
+        result["score"]
 
-        for item in url_results
+        for result in url_results
 
     )
 
@@ -775,7 +920,7 @@ async def analyze_email(
 
 
     # --------------------------------------------------------
-    # Header analysis
+    # Headers
     # --------------------------------------------------------
 
     header_result = analyze_headers(
@@ -789,7 +934,7 @@ async def analyze_email(
 
 
     # --------------------------------------------------------
-    # Attachment analysis
+    # Attachments
     # --------------------------------------------------------
 
     attachment_result = (
@@ -800,7 +945,9 @@ async def analyze_email(
 
 
     attachment_score = (
-        attachment_result["score"]
+        attachment_result[
+            "score"
+        ]
     )
 
 
@@ -858,7 +1005,7 @@ async def analyze_email(
 
 
     # --------------------------------------------------------
-    # FINAL SCORE
+    # FINAL RISK SCORE
     # --------------------------------------------------------
 
     total_score = min(
@@ -894,7 +1041,7 @@ async def analyze_email(
 
 
     # --------------------------------------------------------
-    # Reasons
+    # REASONS
     # --------------------------------------------------------
 
     reasons = []
@@ -937,11 +1084,12 @@ async def analyze_email(
             )
 
 
-    # --------------------------------------------------------
+    # ========================================================
+    # FINAL RESPONSE
+    #
     # IMPORTANT:
-    # Return BOTH "score" and "risk_score"
-    # so the frontend can read data.score.
-    # --------------------------------------------------------
+    # "score" is included because index.html uses data.score
+    # ========================================================
 
     return {
 
@@ -974,7 +1122,8 @@ async def analyze_email(
         },
 
 
-        "urls": url_results,
+        "urls":
+            url_results,
 
 
         "attachments":
@@ -1014,29 +1163,6 @@ async def analyze_email(
 
         "limitations":
             "The score is an evidence-based risk score, not a calibrated probability. A LOW RISK result does not guarantee that an email is safe. Newly created malicious infrastructure may not yet appear in threat intelligence databases."
-
-    }
-
-
-# ============================================================
-# RUN-TIME ERROR HANDLER
-# ============================================================
-
-@app.exception_handler(Exception)
-async def general_exception_handler(
-    request,
-    exc
-):
-
-    return {
-
-        "success": False,
-
-        "error":
-            "Internal analyzer error",
-
-        "detail":
-            str(exc)
 
     }
 ```
